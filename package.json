@@ -1,0 +1,15 @@
+{
+	"name": "climate",
+	"version": "0.0.1",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview"
+	},
+	"devDependencies": {
+		"eslint": "^8.20.0",
+		"prettier": "^2.7.1",
+		"vite": "^3.0.0"
+	}
+}
