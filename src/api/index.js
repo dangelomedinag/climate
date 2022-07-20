@@ -22,14 +22,10 @@ export async function getData(params) {
 	if (params?.days) API_URL.searchParams.set('days', params.days);
 	if (params?.dt) API_URL.searchParams.set('dt', params.dt);
 
-	console.log(API_URL.href);
+	const data = await fetch(API_URL, options);
 
-	try {
-		const data = await fetch(API_URL, options);
-		const response = await data.json();
+	if (data.status > 299) throw data;
+	const response = await data.json();
 
-		return { ...response, url: API_URL };
-	} catch (err) {
-		console.error(err);
-	}
+	return { ...response, url: API_URL };
 }

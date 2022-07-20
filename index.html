@@ -9,22 +9,24 @@
 	<body>
 		<header>
 			<nav>
-				<!-- <button id="toggle">click</button> -->
+				<button id="toggle">click</button>
 				<form id="form-country">
 					<label for="country">
-						<span>Cuidad</span>
+						<span>zona</span>
 						<input
 							type="text"
 							id="country"
 							name="country"
-							placeholder="type your county"
+							placeholder="pais, ciudad o region"
 						/>
 					</label>
+					<button class="submit">buscar</button>
 				</form>
 			</nav>
 		</header>
 		<div id="app">
 			<main id="main" class="hide">
+				<div class="location">Santiago, region metrolitana, chile.</div>
 				<div id="info">
 					<div class="wrapper_img">
 						<img class="info__img" src="xx" alt="xx" />
@@ -87,6 +89,6 @@
 			</div>
 			<div>fuente - <a href="https://www.weatherapi.com/">weatherapi</a></div>
 		</footer>
-		<script type="module" src="/main.js"></script>
+		<script type="module" src="src/main.js"></script>
 	</body>
 </html>

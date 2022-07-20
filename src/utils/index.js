@@ -1,6 +1,4 @@
 export function getDayFromIndex(indexDay) {
-	// console.log({ indexDay });
-
 	switch (indexDay.toString()) {
 		case '1':
 			return 'lunes';
@@ -18,3 +16,14 @@ export function getDayFromIndex(indexDay) {
 			return 'domingo';
 	}
 }
+
+export const TABS = Object.freeze({
+	temp: 'temp',
+	prec: 'precip',
+	wind: 'wind',
+});
+
+export const UNITS = Object.freeze({
+	c: 'c',
+	f: 'f',
+});
