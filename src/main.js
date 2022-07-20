@@ -1,5 +1,11 @@
 import { getData } from './api';
-import { getDayFromIndex, TABS, UNITS } from './utils';
+import {
+	getFormatDateTime,
+	getInputValue,
+	getDayFromIndex,
+	TABS,
+	UNITS,
+} from './utils';
 import '../style.css';
 
 let unit = UNITS.c;
@@ -58,33 +64,6 @@ function selectUnit(e) {
 	setUnit(dataset_unit);
 	render();
 }
-function getFormatDateTime(date, opts = { format: '24h', type: 'short' }) {
-	const dateObj = new Date(date);
-
-	let hours = dateObj.getHours();
-	let minutes = dateObj.getMinutes();
-	const format = hours >= 12 ? 'pm' : 'am';
-
-	minutes = minutes < 10 ? '0' + minutes : minutes;
-
-	if (opts?.format === '24h') {
-		hours = hours < 10 ? '0' + hours : hours;
-
-		return hours + ':' + minutes;
-	}
-
-	if (opts?.format === '12h') {
-		hours = hours % 12;
-		hours = hours ? hours : 12;
-
-		if (opts?.type === 'long') {
-			return `${hours}:${minutes} ${format}`;
-		}
-
-		return `${hours}:${minutes}`;
-	}
-	// console.log(hours, ':', minutes, format);
-}
 function createHourCard(data_temp, temp, src, hours) {
 	const cardElement = document.createElement('div');
 	const tempElement = document.createElement('div');
@@ -113,6 +92,64 @@ function createHourCard(data_temp, temp, src, hours) {
 		img: imgElement,
 		hour: hourElement,
 	};
+}
+function createCardDay(day, date, nextDate, activeDay) {
+	const { condition, maxtemp_c, mintemp_c, maxtemp_f, mintemp_f } = day;
+	const tokenMax = selectedUnit ? maxtemp_c : maxtemp_f;
+	const tokenMin = selectedUnit ? mintemp_c : mintemp_f;
+
+	const cardDay = document.querySelector(`[data-dateid="${date}"]`);
+	if (cardDay) {
+		const eleDay = cardDay.querySelector('.days__day');
+		const eleImg = cardDay.querySelector('.days__img');
+		const eleMax = cardDay.querySelector('.days__max');
+		const eleMin = cardDay.querySelector('.days__min');
+
+		eleDay.textContent = getDayFromIndex(nextDate.getDay());
+		eleImg.setAttribute('src', condition.icon);
+		eleImg.setAttribute('alt', `representacion visual - ${condition.text}`);
+		eleImg.setAttribute('loading', 'lazy');
+
+		eleMax.textContent = `${tokenMax}°.`;
+		eleMin.textContent = `${tokenMin}°.`;
+
+		return;
+	}
+
+	const eleButton = document.createElement('button');
+	const div = document.createElement('div');
+	const img = document.createElement('img');
+	const div2 = document.createElement('div');
+	const max = document.createElement('span');
+	const min = document.createElement('span');
+
+	eleButton.setAttribute('data-dateid', date);
+	eleButton.classList.add('days__card');
+	if (activeDay) eleButton.classList.add('active');
+
+	div.textContent = getDayFromIndex(nextDate.getDay());
+	div.classList.add('days__day');
+
+	img.setAttribute('src', condition.icon);
+	img.setAttribute('alt', `representacion visual - ${condition.text}`);
+	img.setAttribute('loading', 'lazy');
+	img.classList.add('days__img');
+
+	max.textContent = `${tokenMax}°.`;
+	max.classList.add('days__max');
+
+	min.textContent = `${tokenMin}°.`;
+	min.classList.add('days__min');
+
+	div2.classList.add('days__temp');
+	div2.appendChild(max);
+	div2.appendChild(min);
+
+	eleButton.appendChild(div);
+	eleButton.appendChild(img);
+	eleButton.appendChild(div2);
+
+	daysWrapper.appendChild(eleButton);
 }
 function render() {
 	console.log(DATA);
@@ -212,75 +249,6 @@ function render() {
 
 	scrollToCurrentHourCard();
 }
-function createCardDay(day, date, nextDate, activeDay) {
-	const { condition, maxtemp_c, mintemp_c, maxtemp_f, mintemp_f } = day;
-	const tokenMax = selectedUnit ? maxtemp_c : maxtemp_f;
-	const tokenMin = selectedUnit ? mintemp_c : mintemp_f;
-
-	const cardDay = document.querySelector(`[data-dateid="${date}"]`);
-	if (cardDay) {
-		const eleDay = cardDay.querySelector('.days__day');
-		const eleImg = cardDay.querySelector('.days__img');
-		const eleMax = cardDay.querySelector('.days__max');
-		const eleMin = cardDay.querySelector('.days__min');
-
-		eleDay.textContent = getDayFromIndex(nextDate.getDay());
-		eleImg.setAttribute('src', condition.icon);
-		eleImg.setAttribute('alt', `representacion visual - ${condition.text}`);
-		eleImg.setAttribute('loading', 'lazy');
-
-		eleMax.textContent = `${tokenMax}°.`;
-		eleMin.textContent = `${tokenMin}°.`;
-
-		return;
-	}
-
-	const eleButton = document.createElement('button');
-	const div = document.createElement('div');
-	const img = document.createElement('img');
-	const div2 = document.createElement('div');
-	const max = document.createElement('span');
-	const min = document.createElement('span');
-
-	eleButton.setAttribute('data-dateid', date);
-	eleButton.classList.add('days__card');
-	if (activeDay) eleButton.classList.add('active');
-
-	div.textContent = getDayFromIndex(nextDate.getDay());
-	div.classList.add('days__day');
-
-	img.setAttribute('src', condition.icon);
-	img.setAttribute('alt', `representacion visual - ${condition.text}`);
-	img.setAttribute('loading', 'lazy');
-	img.classList.add('days__img');
-
-	max.textContent = `${tokenMax}°.`;
-	max.classList.add('days__max');
-
-	min.textContent = `${tokenMin}°.`;
-	min.classList.add('days__min');
-
-	div2.classList.add('days__temp');
-	div2.appendChild(max);
-	div2.appendChild(min);
-
-	eleButton.appendChild(div);
-	eleButton.appendChild(img);
-	eleButton.appendChild(div2);
-
-	daysWrapper.appendChild(eleButton);
-
-	// daysWrapper.innerHTML += `
-	// <button class="days__card ${activeDay ? 'active' : ''}" data-dateid=${date} >
-	// 	<div class="days__day">${getDayFromIndex(nextDate.getDay())}</div>
-	// 	<img class="days__img" src="${condition.icon}" alt="" />
-	// 	<div class="days__temp">
-	// 		<span class="days__max">${tokenMax}°.</span>
-	// 		<span class="days__min">${tokenMin}°.</span>
-	// 	</div>
-	// </button>
-	// `;
-}
 function scrollToCurrentHourCard() {
 	const currentHour = new Date(Date.now()).getHours();
 	const currentHourCard =
@@ -290,10 +258,6 @@ function scrollToCurrentHourCard() {
 		left: currentHourCard.offsetLeft,
 		behavior: 'smooth',
 	});
-}
-function getInputValue(inputElement) {
-	const value = inputElement.value.toLowerCase().trim();
-	return value;
 }
 function submitHandler(e) {
 	// prevent page reload

@@ -27,3 +27,38 @@ export const UNITS = Object.freeze({
 	c: 'c',
 	f: 'f',
 });
+
+export function getInputValue(inputElement) {
+	const value = inputElement.value.toLowerCase().trim();
+	return value;
+}
+
+export function getFormatDateTime(
+	date,
+	opts = { format: '24h', type: 'short' }
+) {
+	const dateObj = new Date(date);
+
+	let hours = dateObj.getHours();
+	let minutes = dateObj.getMinutes();
+	const format = hours >= 12 ? 'pm' : 'am';
+
+	minutes = minutes < 10 ? '0' + minutes : minutes;
+
+	if (opts?.format === '24h') {
+		hours = hours < 10 ? '0' + hours : hours;
+
+		return hours + ':' + minutes;
+	}
+
+	if (opts?.format === '12h') {
+		hours = hours % 12;
+		hours = hours ? hours : 12;
+
+		if (opts?.type === 'long') {
+			return `${hours}:${minutes} ${format}`;
+		}
+
+		return `${hours}:${minutes}`;
+	}
+}
