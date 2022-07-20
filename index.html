@@ -7,22 +7,22 @@
 		<title>Climate - wheather app</title>
 	</head>
 	<body>
-		<header>
-			<nav>
+		<header id="header">
+			<div>
 				<button id="toggle">click</button>
-				<form id="form-country">
-					<label for="country">
-						<span>zona</span>
+				<form id="form-search">
+					<label class="form-group" for="form-input">
+						<span class="form-label">zona</span>
 						<input
 							type="text"
-							id="country"
+							id="form-input"
 							name="country"
-							placeholder="pais, ciudad o region"
+							placeholder="Pais, Ciudad o Región"
 						/>
 					</label>
-					<button class="submit">buscar</button>
+					<button id="form-submit">buscar</button>
 				</form>
-			</nav>
+			</div>
 		</header>
 		<div id="app">
 			<main id="main" class="hide">
@@ -39,19 +39,25 @@
 					<div class="wrapper_temp">
 						<h2 class="info__temp"></h2>
 						<div class="info__btns">
-							<button data-unit="c" class="btns__c active">°c</button>
-							<button data-unit="f" class="btns__f">°f</button>
+							<button data-unit="c" class="btns btns__c active">°c</button>
+							<button data-unit="f" class="btns btns__f">°f</button>
 						</div>
 					</div>
 					<div class="wrapper_data">
-						<p>Prob. de precipitaciones: <span class="data__prec"></span>%.</p>
-						<p>Humedad: <span class="data__humedity"></span>%.</p>
-						<p>Viento: a <span class="data__wind"></span> km/h.</p>
+						<p class="data__p">
+							Prob. de precipitaciones: <span class="data__prec"></span>%.
+						</p>
+						<p class="data__p">
+							Humedad: <span class="data__humedity"></span>%.
+						</p>
+						<p class="data__p">
+							Viento: a <span class="data__wind"></span> km/h.
+						</p>
 					</div>
 					<div class="wrapper_city">
-						<h2 class="item-block city__city"></h2>
-						<span class="item-block city__day"></span>
-						<span class="item-block city__cond"></span>
+						<h2 class="info__p city__city"></h2>
+						<p class="info__p city__day"></p>
+						<p class="info__p city__cond"></p>
 					</div>
 				</div>
 				<div id="tabs">
@@ -63,7 +69,7 @@
 				<div id="days"></div>
 			</main>
 		</div>
-		<footer>
+		<footer id="footer">
 			<div class="custom-shape-divider-bottom-1658260719">
 				<svg
 					data-name="Layer 1"

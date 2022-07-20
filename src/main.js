@@ -13,17 +13,19 @@ let tab = TABS.temp;
 let selectedUnit = unit === UNITS.c;
 let DATA;
 
-const form = document.getElementById('form-country');
+const form = document.getElementById('form-search');
 const mainWrapper = document.getElementById('main');
 const c_toggle = document.querySelector('.btns__c');
 const f_toggle = document.querySelector('.btns__f');
 const textLocation = document.querySelector('.location');
 
 const toggle = document.getElementById('toggle');
-toggle.addEventListener('click', () => {
-	document.body.classList.toggle('night');
-	document.body.classList.toggle('day');
-});
+if (toggle) {
+	toggle.addEventListener('click', () => {
+		document.body.classList.toggle('night');
+		document.body.classList.toggle('day');
+	});
+}
 
 const infoImg = document.querySelector('.info__img');
 const infoTemp = document.querySelector('.info__temp');
@@ -116,16 +118,16 @@ function createCardDay(day, date, nextDate, activeDay) {
 		return;
 	}
 
-	const eleButton = document.createElement('button');
+	const eleDiv = document.createElement('div');
 	const div = document.createElement('div');
 	const img = document.createElement('img');
 	const div2 = document.createElement('div');
 	const max = document.createElement('span');
 	const min = document.createElement('span');
 
-	eleButton.setAttribute('data-dateid', date);
-	eleButton.classList.add('days__card');
-	if (activeDay) eleButton.classList.add('active');
+	eleDiv.setAttribute('data-dateid', date);
+	eleDiv.classList.add('days__card');
+	if (activeDay) eleDiv.classList.add('active');
 
 	div.textContent = getDayFromIndex(nextDate.getDay());
 	div.classList.add('days__day');
@@ -145,14 +147,14 @@ function createCardDay(day, date, nextDate, activeDay) {
 	div2.appendChild(max);
 	div2.appendChild(min);
 
-	eleButton.appendChild(div);
-	eleButton.appendChild(img);
-	eleButton.appendChild(div2);
+	eleDiv.appendChild(div);
+	eleDiv.appendChild(img);
+	eleDiv.appendChild(div2);
 
-	daysWrapper.appendChild(eleButton);
+	daysWrapper.appendChild(eleDiv);
 }
 function render() {
-	console.log(DATA);
+	// console.log(DATA);
 	// const selectedUnit = unit === UNITS.c;
 	const {
 		forecastday,
@@ -225,7 +227,7 @@ function render() {
 							break;
 						case TABS.wind:
 							{
-								config.temp = { data: wind_kph, unit: ' km/h' };
+								config.temp = { data: wind_kph, unit: 'km/h' };
 								config.src = '/arrow-up.svg';
 							}
 							break;
