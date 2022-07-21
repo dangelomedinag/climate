@@ -309,12 +309,9 @@ function handlerError(error) {
 	const elText = document.createElement('h1');
 	elText.textContent = 'Sin registros para tu busqueda.';
 	el.setAttribute('src', '/zone-not-found.png');
-	el.style.opacity = '0.2';
-	el.style.display = 'block';
-	el.style.minWidth = '0';
-	el.style.maxWidth = '500px';
-	el.style.width = '100%';
-	el.style.padding = '1em';
+	el.setAttribute('alt', 'personaje con rostro triste busqueda sin exito');
+	el.setAttribute('loading', 'lazy');
+
 	const appWrapper = document.getElementById('app');
 	div.appendChild(elText);
 	div.appendChild(el);
