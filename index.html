@@ -7,27 +7,58 @@
 		<title>Climate - wheather app</title>
 	</head>
 	<body>
+		<!-- <button id="scrollToTop">
+			<svg
+				class="svgicon"
+				xmlns="http://www.w3.org/2000/svg"
+				fill="none"
+				viewBox="0 0 24 24"
+				stroke="currentColor"
+				stroke-width="1"
+			>
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					d="M7 11l5-5m0 0l5 5m-5-5v12"
+				/>
+			</svg>
+		</button> -->
 		<header id="header">
 			<div>
-				<button id="toggle">click</button>
+				<!-- <button id="toggle">click</button> -->
 				<form id="form-search">
-					<label class="form-group" for="form-input">
+					<label class="form-group parent" for="form-input">
 						<span class="form-label">zona</span>
 						<input
-							type="text"
+							type="search"
 							id="form-input"
 							name="country"
 							placeholder="Pais, Ciudad o Región"
+							required
+							minlength="3"
+							autocomplete="off"
 						/>
+						<section class="hide">
+							<!-- <button type="button">opt1</button>
+								<button type="button">opt2</button>
+								<button type="button">opt3</button>
+								<button type="button">opt4</button> -->
+						</section>
+						<button type="submit" id="form-submit">
+							<span class="submit_text">buscar</span>
+							<div class="loader submit hide">Loading...</div>
+						</button>
 					</label>
-					<button id="form-submit">buscar</button>
 				</form>
 			</div>
 		</header>
 		<div id="app">
+			<div class="loader main hide">Loading...</div>
 			<main id="main" class="hide">
-				<div class="location">Santiago, region metrolitana, chile.</div>
-				<div id="info">
+				<div class="shadow-smooth location">
+					Santiago, region metrolitana, chile.
+				</div>
+				<div class="shadow-smooth" id="info">
 					<div class="wrapper_img">
 						<img
 							src=""
@@ -60,13 +91,30 @@
 						<p class="info__p city__cond"></p>
 					</div>
 				</div>
-				<div id="tabs">
+				<div class="shadow-smooth" id="tabs">
 					<button data-tab="temp" class="active">Temperatura</button>
 					<button data-tab="precip">Precipitaciones</button>
 					<button data-tab="wind">Viento</button>
 				</div>
 				<div id="chart">CHARTS</div>
 				<div id="days"></div>
+				<button id="scrollToTop">
+					<svg
+						class="svgicon"
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke="currentColor"
+						stroke-width="1"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M7 11l5-5m0 0l5 5m-5-5v12"
+						/>
+					</svg>
+				</button>
+				<div style="font-weight: bold">volver arriba</div>
 			</main>
 		</div>
 		<footer id="footer">

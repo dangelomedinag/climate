@@ -1,4 +1,4 @@
-import { getData } from './api';
+import { /* getData, */ API } from './api';
 import {
 	getFormatDateTime,
 	getInputValue,
@@ -13,7 +13,17 @@ let tab = TABS.temp;
 let selectedUnit = unit === UNITS.c;
 let DATA;
 
+const btnScrollTop = document.getElementById('scrollToTop');
+btnScrollTop.addEventListener('click', () => {
+	window.scrollTo({ behavior: 'smooth', top: 0 });
+});
+
+const submitText = document.querySelector('.submit_text');
+const loaderSubmit = document.querySelector('.loader.submit');
+const loaderMain = document.querySelector('.loader.main');
+const section = document.querySelector('section');
 const form = document.getElementById('form-search');
+const inputSearch = document.getElementById('form-input');
 const mainWrapper = document.getElementById('main');
 const c_toggle = document.querySelector('.btns__c');
 const f_toggle = document.querySelector('.btns__f');
@@ -108,7 +118,10 @@ function createCardDay(day, date, nextDate, activeDay) {
 		const eleMin = cardDay.querySelector('.days__min');
 
 		eleDay.textContent = getDayFromIndex(nextDate.getDay());
-		eleImg.setAttribute('src', condition.icon);
+		eleImg.setAttribute(
+			'src',
+			condition.code == 1000 ? `/${condition.code}.png` : condition.icon
+		);
 		eleImg.setAttribute('alt', `representacion visual - ${condition.text}`);
 		eleImg.setAttribute('loading', 'lazy');
 
@@ -132,7 +145,10 @@ function createCardDay(day, date, nextDate, activeDay) {
 	div.textContent = getDayFromIndex(nextDate.getDay());
 	div.classList.add('days__day');
 
-	img.setAttribute('src', condition.icon);
+	img.setAttribute(
+		'src',
+		condition.code == 1000 ? `/${condition.code}.png` : condition.icon
+	);
 	img.setAttribute('alt', `representacion visual - ${condition.text}`);
 	img.setAttribute('loading', 'lazy');
 	img.classList.add('days__img');
@@ -154,8 +170,6 @@ function createCardDay(day, date, nextDate, activeDay) {
 	daysWrapper.appendChild(eleDiv);
 }
 function render() {
-	// console.log(DATA);
-	// const selectedUnit = unit === UNITS.c;
 	const {
 		forecastday,
 		precip,
@@ -163,6 +177,7 @@ function render() {
 		wind,
 		is_day,
 		icon,
+		code,
 		text,
 		temp,
 		localtime,
@@ -174,6 +189,7 @@ function render() {
 		wind: DATA.current.wind_kph,
 		is_day: DATA.current.is_day,
 		text: DATA.current.condition.text,
+		code: DATA.current.condition.code,
 		icon: DATA.current.condition.icon,
 		localtime: DATA.location.localtime,
 		name: DATA.location.name,
@@ -185,8 +201,8 @@ function render() {
 	setThemeOfday(is_day);
 
 	textLocation.textContent = `${DATA.location.name}, ${DATA.location.region}, ${DATA.location.country}.`;
-
-	infoImg.setAttribute('src', icon);
+	console.log(code);
+	infoImg.setAttribute('src', code == 1000 ? `/${code}.png` : icon);
 	infoImg.setAttribute('loading', 'lazy');
 	infoTemp.textContent = temp;
 	dataPrec.textContent = Math.round(precip);
@@ -210,7 +226,7 @@ function render() {
 					const formatHour = getFormatDateTime(time);
 					let config = {
 						hours: formatHour,
-						src: condition.icon,
+						src: condition.code == 1000 ? `/${code}.png` : condition.icon,
 					};
 
 					switch (tab) {
@@ -265,6 +281,12 @@ function submitHandler(e) {
 	// prevent page reload
 	e.preventDefault();
 
+	// if error elements exist, remove of the DOM
+	const errorWrapper = document.getElementById('error');
+	if (errorWrapper) errorWrapper.remove();
+
+	loaderMain.classList.remove('hide');
+	if (timeoutId) clearTimeout(timeoutId);
 	// hide main content of the DOM
 	mainWrapper.classList.add('hide');
 
@@ -273,13 +295,15 @@ function submitHandler(e) {
 	input.blur();
 
 	// get api results
-	getData({ q: inputValue }).then(handlerResponse).catch(handlerError);
+	API.forecast({ q: inputValue, days: 3 })
+		.then(handlerResponse)
+		.catch(handlerError)
+		.finally(() => {
+			closeSuggestion();
+			loaderMain.classList.add('hide');
+		});
 }
 function handlerResponse(response) {
-	// if error elements exist, remove of the DOM
-	const errorWrapper = document.getElementById('error');
-	if (errorWrapper) errorWrapper.remove();
-
 	// store response globally
 	DATA = response;
 
@@ -297,7 +321,7 @@ function handlerError(error) {
 	c_toggle.removeEventListener('click', selectUnit);
 	f_toggle.removeEventListener('click', selectUnit);
 
-	console.error('error handler', error);
+	console.warn(error.message);
 
 	// if error elements exist, avoid re-render error
 	const errorWrapper = document.getElementById('error');
@@ -315,9 +339,76 @@ function handlerError(error) {
 	const appWrapper = document.getElementById('app');
 	div.appendChild(elText);
 	div.appendChild(el);
+
 	appWrapper.appendChild(div);
 }
 
+const openSuggestion = () => {
+	section.classList.remove('hide');
+	if (timeoutId) clearTimeout(timeoutId);
+};
+const closeSuggestion = () => {
+	if (timeoutId) clearTimeout(timeoutId);
+	section.classList.add('hide');
+};
+
+function clickOutside(e) {
+	if (!section.contains(e.target)) {
+		closeSuggestion();
+		window.removeEventListener('click', clickOutside);
+	}
+
+	if (e.target.classList.contains('option')) {
+		inputSearch.value = e.target.dataset.value;
+		closeSuggestion();
+		window.removeEventListener('click', clickOutside);
+	}
+}
+
+let timeoutId;
+
+function onInput() {
+	if (timeoutId) clearTimeout(timeoutId);
+
+	const value = getInputValue(inputSearch);
+	if (value.length < 3) {
+		closeSuggestion();
+		return;
+	}
+
+	timeoutId = setTimeout(() => {
+		submitText.style.visibility = 'hidden';
+		loaderSubmit.classList.remove('hide');
+		API.search({ q: value })
+			.then((response) => {
+				if (response.search.length < 1) {
+					closeSuggestion();
+					return;
+				}
+
+				section.innerHTML = '';
+				response.search.forEach((option) => {
+					const newOption = document.createElement('button');
+					newOption.setAttribute('type', 'button');
+					newOption.setAttribute(
+						'data-value',
+						option.name + ' ' + option.country
+					);
+					newOption.classList.add('option');
+					newOption.textContent = `${option.name}, ${option.country}`;
+					section.appendChild(newOption);
+				});
+				window.addEventListener('click', clickOutside);
+			})
+			.finally(() => {
+				openSuggestion();
+				loaderSubmit.classList.add('hide');
+				submitText.style.visibility = 'visible';
+			});
+	}, 500);
+}
+
+inputSearch.addEventListener('input', onInput);
 form.addEventListener('submit', submitHandler);
 c_toggle.addEventListener('click', selectUnit);
 f_toggle.addEventListener('click', selectUnit);
