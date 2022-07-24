@@ -77,6 +77,35 @@ function selectUnit(e) {
 	render();
 }
 function createHourCard(data_temp, temp, src, hours) {
+	// console.log(chartWrapper.children.length);
+
+	if (chartWrapper.children.length >= 24) {
+		const cards = document.querySelector(`[data-temp="${data_temp}"]`);
+		// console.log('data-temp=', data_temp - 1);
+		// console.log(attr);
+		console.log(cards);
+
+		const hourtempdiv = cards.querySelector('.hour__temp');
+		hourtempdiv.textContent = `${temp.data}${temp.unit}`;
+		const hourimg = cards.querySelector('.hour__img');
+		hourimg.setAttribute('src', src);
+
+		if (tab !== TABS.wind) {
+			hourimg.style.transformOrigin = 'center';
+			hourimg.style.transform = 'rotate(0deg)';
+		}
+
+		const hourdiv = cards.querySelector('.hour');
+		hourdiv.textContent = hours;
+
+		return {
+			card: cards,
+			temp: hourtempdiv,
+			img: hourimg,
+			hour: hourdiv,
+		};
+	}
+
 	const cardElement = document.createElement('div');
 	const tempElement = document.createElement('div');
 	const imgElement = document.createElement('img');
@@ -118,10 +147,7 @@ function createCardDay(day, date, nextDate, activeDay) {
 		const eleMin = cardDay.querySelector('.days__min');
 
 		eleDay.textContent = getDayFromIndex(nextDate.getDay());
-		eleImg.setAttribute(
-			'src',
-			condition.code == 1000 ? `/${condition.code}.png` : condition.icon
-		);
+		eleImg.setAttribute('src', getUrlForIcon(condition.icon));
 		eleImg.setAttribute('alt', `representacion visual - ${condition.text}`);
 		eleImg.setAttribute('loading', 'lazy');
 
@@ -145,10 +171,7 @@ function createCardDay(day, date, nextDate, activeDay) {
 	div.textContent = getDayFromIndex(nextDate.getDay());
 	div.classList.add('days__day');
 
-	img.setAttribute(
-		'src',
-		condition.code == 1000 ? `/${condition.code}.png` : condition.icon
-	);
+	img.setAttribute('src', getUrlForIcon(condition.icon));
 	img.setAttribute('alt', `representacion visual - ${condition.text}`);
 	img.setAttribute('loading', 'lazy');
 	img.classList.add('days__img');
@@ -169,7 +192,24 @@ function createCardDay(day, date, nextDate, activeDay) {
 
 	daysWrapper.appendChild(eleDiv);
 }
+
+function getUrlForIcon(icon) {
+	// console.log(icon);
+	const url = icon.split('/');
+	const newUrl = url.slice(url.length - 2);
+	// console.log({ newUrl, icon });
+	// const isday = newUrl[0] === 'day';
+	const listo = `/${newUrl.join('/')}`;
+	// console.log(listo);
+	// console.log('url[0]', url[0]);
+
+	return listo;
+}
+
 function render() {
+	console.log(DATA);
+
+	/** @type {{forecastday: Array, precip: number, humidity: number, wind: number, is_day: number, icon: string, code: number,text: string,temp: number,localtime: number,name: string} */
 	const {
 		forecastday,
 		precip,
@@ -177,7 +217,7 @@ function render() {
 		wind,
 		is_day,
 		icon,
-		code,
+		// code,
 		text,
 		temp,
 		localtime,
@@ -201,10 +241,11 @@ function render() {
 	setThemeOfday(is_day);
 
 	textLocation.textContent = `${DATA.location.name}, ${DATA.location.region}, ${DATA.location.country}.`;
-	console.log(code);
-	infoImg.setAttribute('src', code == 1000 ? `/${code}.png` : icon);
+	// console.log(getUrlForIcon(icon));
+
+	infoImg.setAttribute('src', getUrlForIcon(icon));
 	infoImg.setAttribute('loading', 'lazy');
-	infoTemp.textContent = temp;
+	infoTemp.textContent = `${temp.toFixed(1)}°`;
 	dataPrec.textContent = Math.round(precip);
 	dataHumedity.textContent = humidity;
 	dataWind.textContent = wind;
@@ -214,7 +255,7 @@ function render() {
 	cityDay.textContent = getDayFromIndex(currentDate.getDay());
 	cityCond.textContent = text;
 
-	chartWrapper.innerHTML = '';
+	// chartWrapper.innerHTML = '';
 
 	forecastday.forEach(({ day, date, hour }) => {
 		const nextDate = new Date(date);
@@ -226,7 +267,7 @@ function render() {
 					const formatHour = getFormatDateTime(time);
 					let config = {
 						hours: formatHour,
-						src: condition.code == 1000 ? `/${code}.png` : condition.icon,
+						src: getUrlForIcon(condition.icon),
 					};
 
 					switch (tab) {
@@ -270,11 +311,26 @@ function render() {
 function scrollToCurrentHourCard() {
 	const currentHour = new Date(Date.now()).getHours();
 	const currentHourCard =
-		chartWrapper.querySelectorAll('.chart__card')[currentHour - 1];
+		chartWrapper.querySelectorAll('.chart__card')[currentHour];
 
+	const act = chartWrapper.querySelector('.current_hour');
+	if (act) {
+		act.classList.remove('currnte_hour');
+	}
+
+	const width = chartWrapper.getBoundingClientRect().width;
+
+	currentHourCard.classList.add('current_hour');
+	currentHourCard.classList.add('shadow-smooth');
+
+	// currentHourCard.scrollIntoView({
+	// 	behavior: 'auto',
+	// 	inline: 'end',
+	// 	block: 'center',
+	// });
 	chartWrapper.scrollTo({
-		left: currentHourCard.offsetLeft,
 		behavior: 'smooth',
+		left: currentHourCard.offsetLeft - width / 2 + 16 * 3,
 	});
 }
 function submitHandler(e) {

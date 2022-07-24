@@ -215,33 +215,73 @@ header {
 }
 
 #info {
+	display: block;
 	padding-left: 1em;
 	padding-right: 1em;
 	border: 1px solid rgba(255, 255, 255, 0.2);
 	border-radius: 10px;
-	text-align: left;
-	gap: 0.5em;
-	flex-direction: column;
+	text-align: center;
+	/* gap: 0.5em; */
+	/* flex-direction: column; */
 	/* flex-wrap: wrap; */
 }
 
+@media (min-width: 600px) {
+	#info {
+		/* display: flex;
+		justify-content: space-between; */
+		/* align-items: center; */
+		/* width: 100%; */
+	}
+
+	/* .wrapper_city {
+		margin-right: auto;
+	} */
+}
+
 .wrapper_img {
-	/* display: flex; */
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+@media (min-width: 350px) {
+	.wrapper_img {
+		flex-direction: row;
+		justify-content: center;
+	}
+}
+
+.info__img {
+	display: block;
+	max-width: 150px;
+	min-width: 0;
+	/* display: inline-block; */
+}
+
+.info__temp {
+	/* text-align: center; */
+	width: 100%;
+	font-size: 3rem;
+	margin: 0;
+}
+
+@media (min-width: 350px) {
+	.info__temp {
+		font-size: 4rem;
+	}
 }
 
 .wrapper_temp {
 	/* flex-basis: 100%; */
-	display: flex;
-	font-size: 3rem;
-	margin: 0;
-	min-width: 130px;
-}
-
-.info__temp {
-	margin: 0;
+	/* display: flex; */
+	/* font-size: 3rem; */
+	/* margin: 0; */
+	/* min-width: 130px; */
 }
 .info__btns {
-	display: flex;
+	/* text-align: center; */
+	/* display: flex; */
 }
 
 .btns {
@@ -256,28 +296,34 @@ header {
 }
 
 .info__btns .active {
-	background-color: var(--bg-color-transparent);
+	background-color: var(--header-bg);
 	font-weight: bold;
 }
 
-.wrapper_data {
+@media (min-width: 600px) {
+	.container {
+		/* width: 100%; */
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+	}
+
+	.wrapper_data {
+		text-align: left;
+	}
+	.wrapper_city {
+		text-align: right;
+		/* display: block; */
+	}
 }
 
 .data__p,
 .info__p {
-	margin: 0;
-}
-
-.wrapper_city {
-	/* display: flex;
-	flex-direction: column;
-	justify-content: space-between; */
-	/* margin-left: auto; */
-	/* text-align: right; */
+	/* margin: 0; */
 }
 
 .city__city {
-	margin: 0;
+	/* margin: 0; */
 }
 
 #tabs {
@@ -296,20 +342,26 @@ header {
 #tabs button {
 	display: block;
 	width: 100%;
-	background: rgba(255, 255, 255, 0.2);
+	/* background: rgba(255, 255, 255, 0.2); */
+	background-color: transparent;
 	border: 2px solid transparent;
 	padding: 0.5em 0;
-	color: var(--header-bg);
+	/* color: var(--header-bg); */
 	border-radius: 6px;
 	font-size: 1.1rem;
 	margin: 0;
 }
 #tabs button:hover {
 	opacity: 0.8;
+	background-color: rgba(255, 255, 255, 0.1);
 }
 #tabs .active {
 	color: white;
-	background: var(--header-bg);
+	background-color: var(--header-bg);
+}
+#tabs .active:hover {
+	color: white;
+	background-color: var(--header-bg);
 }
 
 #chart {
@@ -341,10 +393,14 @@ header {
 }
 
 .chart__card {
-	background-color: var(--bg-color-transparent);
+	/* background-color: var(--bg-color-transparent); */
 	padding: 2em;
 	border: 1px solid var(--bg-color-d);
 	border-radius: 10px;
+}
+
+.current_hour {
+	background-color: var(--bg-color-transparent);
 }
 
 .hour__temp {
@@ -397,10 +453,10 @@ a {
 } */
 
 .info__img {
-	display: block;
-	max-width: 150px;
-	min-width: 100px;
-	height: auto;
+	/* display: block; */
+	/* max-width: 150px;
+	min-width: 100px; */
+	/* height: auto; */
 }
 
 .item-block {
@@ -498,19 +554,19 @@ section button:hover {
 	.wrapper_temp {
 		/* flex-basis: 100%; */
 		/* max-width: 300px; */
-		flex-grow: 1;
+		/* flex-grow: 1; */
 	}
 	.wrapper_data {
 		/* flex-basis: 50%; */
-		display: flex;
+		/* display: flex;
 		flex-direction: column;
-		justify-content: space-between;
+		justify-content: space-between; */
 	}
 
 	.wrapper_city {
-		display: flex;
+		/* display: flex;
 		flex-direction: column;
-		justify-content: space-between;
+		justify-content: space-between; */
 	}
 
 	#tabs {
@@ -528,8 +584,8 @@ section button:hover {
 
 @media (min-width: 700px) {
 	.wrapper_temp {
-		flex-grow: 0;
-		flex-basis: auto;
+		/* flex-grow: 0;
+		flex-basis: auto; */
 	}
 
 	.wrapper_city {
@@ -537,8 +593,8 @@ section button:hover {
 		flex-direction: column;
 		justify-content: space-between; */
 		/* flex-basis: 100%; */
-		margin-left: auto;
-		text-align: right;
+		/* margin-left: auto;
+		text-align: right; */
 	}
 }
 
