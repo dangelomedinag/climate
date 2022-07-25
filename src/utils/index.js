@@ -62,3 +62,10 @@ export function getFormatDateTime(
 		return `${hours}:${minutes}`;
 	}
 }
+
+export function getUrlForIcon(icon) {
+	const url = icon.split('/');
+	const newUrl = url.slice(url.length - 2);
+	const listo = `/${newUrl.join('/')}`;
+	return listo;
+}

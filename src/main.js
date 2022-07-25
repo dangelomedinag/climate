@@ -1,14 +1,20 @@
 import { /* getData, */ API } from './api';
 import {
-	getFormatDateTime,
+	// getUrlForIcon,
+	// getFormatDateTime,
+	// getDayFromIndex,
 	getInputValue,
-	getDayFromIndex,
 	TABS,
 	UNITS,
 } from './utils';
 import '../style.css';
+import Information from './components/information';
+import Location from './components/location';
+import CardsDays from './components/cards-days';
+import CardsHours from './components/cards-hours';
 
 let unit = UNITS.c;
+
 let tab = TABS.temp;
 let selectedUnit = unit === UNITS.c;
 let DATA;
@@ -18,16 +24,24 @@ btnScrollTop.addEventListener('click', () => {
 	window.scrollTo({ behavior: 'smooth', top: 0 });
 });
 
+function themeDay() {
+	const date = new Date(Date.now()).getHours();
+	// console.log({ date });
+	if (date < 8 || date > 17) document.body.classList.toggle('night');
+	else document.body.classList.toggle('day');
+}
+
+themeDay();
+
 const submitText = document.querySelector('.submit_text');
 const loaderSubmit = document.querySelector('.loader.submit');
-const loaderMain = document.querySelector('.loader.main');
+const loaderMain = document.querySelector('.loader-wrapper');
 const section = document.querySelector('section');
 const form = document.getElementById('form-search');
 const inputSearch = document.getElementById('form-input');
 const mainWrapper = document.getElementById('main');
 const c_toggle = document.querySelector('.btns__c');
 const f_toggle = document.querySelector('.btns__f');
-const textLocation = document.querySelector('.location');
 
 const toggle = document.getElementById('toggle');
 if (toggle) {
@@ -37,18 +51,18 @@ if (toggle) {
 	});
 }
 
-const infoImg = document.querySelector('.info__img');
-const infoTemp = document.querySelector('.info__temp');
+// const infoImg = document.querySelector('.info__img');
+// const infoTemp = document.querySelector('.info__temp');
 
-const dataPrec = document.querySelector('.data__prec');
-const dataHumedity = document.querySelector('.data__humedity');
-const dataWind = document.querySelector('.data__wind');
+// const dataPrec = document.querySelector('.data__prec');
+// const dataHumedity = document.querySelector('.data__humedity');
+// const dataWind = document.querySelector('.data__wind');
 
-const cityCity = document.querySelector('.city__city');
-const cityDay = document.querySelector('.city__day');
-const cityCond = document.querySelector('.city__cond');
+// const cityCity = document.querySelector('.city__city');
+// const cityDay = document.querySelector('.city__day');
+// const cityCond = document.querySelector('.city__cond');
 
-const daysWrapper = document.getElementById('days');
+// const daysWrapper = document.getElementById('days');
 const tabsWrapper = document.getElementById('tabs');
 const chartWrapper = document.getElementById('chart');
 
@@ -76,153 +90,12 @@ function selectUnit(e) {
 	setUnit(dataset_unit);
 	render();
 }
-function createHourCard(data_temp, temp, src, hours) {
-	// console.log(chartWrapper.children.length);
-
-	if (chartWrapper.children.length >= 24) {
-		const cards = document.querySelector(`[data-temp="${data_temp}"]`);
-		// console.log('data-temp=', data_temp - 1);
-		// console.log(attr);
-		console.log(cards);
-
-		const hourtempdiv = cards.querySelector('.hour__temp');
-		hourtempdiv.textContent = `${temp.data}${temp.unit}`;
-		const hourimg = cards.querySelector('.hour__img');
-		hourimg.setAttribute('src', src);
-
-		if (tab !== TABS.wind) {
-			hourimg.style.transformOrigin = 'center';
-			hourimg.style.transform = 'rotate(0deg)';
-		}
-
-		const hourdiv = cards.querySelector('.hour');
-		hourdiv.textContent = hours;
-
-		return {
-			card: cards,
-			temp: hourtempdiv,
-			img: hourimg,
-			hour: hourdiv,
-		};
-	}
-
-	const cardElement = document.createElement('div');
-	const tempElement = document.createElement('div');
-	const imgElement = document.createElement('img');
-	const hourElement = document.createElement('div');
-
-	cardElement.classList.add('chart__card');
-	cardElement.setAttribute('data-temp', data_temp);
-	imgElement.classList.add('hour__img');
-	imgElement.setAttribute('src', src);
-	tempElement.classList.add('hour__temp');
-	tempElement.textContent = `${temp.data}${temp.unit}`;
-
-	hourElement.classList.add('hour');
-	hourElement.textContent = hours;
-
-	cardElement.appendChild(tempElement);
-	cardElement.appendChild(imgElement);
-	cardElement.appendChild(hourElement);
-
-	chartWrapper.appendChild(cardElement);
-
-	return {
-		card: cardElement,
-		temp: tempElement,
-		img: imgElement,
-		hour: hourElement,
-	};
-}
-function createCardDay(day, date, nextDate, activeDay) {
-	const { condition, maxtemp_c, mintemp_c, maxtemp_f, mintemp_f } = day;
-	const tokenMax = selectedUnit ? maxtemp_c : maxtemp_f;
-	const tokenMin = selectedUnit ? mintemp_c : mintemp_f;
-
-	const cardDay = document.querySelector(`[data-dateid="${date}"]`);
-	if (cardDay) {
-		const eleDay = cardDay.querySelector('.days__day');
-		const eleImg = cardDay.querySelector('.days__img');
-		const eleMax = cardDay.querySelector('.days__max');
-		const eleMin = cardDay.querySelector('.days__min');
-
-		eleDay.textContent = getDayFromIndex(nextDate.getDay());
-		eleImg.setAttribute('src', getUrlForIcon(condition.icon));
-		eleImg.setAttribute('alt', `representacion visual - ${condition.text}`);
-		eleImg.setAttribute('loading', 'lazy');
-
-		eleMax.textContent = `${tokenMax}°.`;
-		eleMin.textContent = `${tokenMin}°.`;
-
-		return;
-	}
-
-	const eleDiv = document.createElement('div');
-	const div = document.createElement('div');
-	const img = document.createElement('img');
-	const div2 = document.createElement('div');
-	const max = document.createElement('span');
-	const min = document.createElement('span');
-
-	eleDiv.setAttribute('data-dateid', date);
-	eleDiv.classList.add('days__card');
-	if (activeDay) eleDiv.classList.add('active');
-
-	div.textContent = getDayFromIndex(nextDate.getDay());
-	div.classList.add('days__day');
-
-	img.setAttribute('src', getUrlForIcon(condition.icon));
-	img.setAttribute('alt', `representacion visual - ${condition.text}`);
-	img.setAttribute('loading', 'lazy');
-	img.classList.add('days__img');
-
-	max.textContent = `${tokenMax}°.`;
-	max.classList.add('days__max');
-
-	min.textContent = `${tokenMin}°.`;
-	min.classList.add('days__min');
-
-	div2.classList.add('days__temp');
-	div2.appendChild(max);
-	div2.appendChild(min);
-
-	eleDiv.appendChild(div);
-	eleDiv.appendChild(img);
-	eleDiv.appendChild(div2);
-
-	daysWrapper.appendChild(eleDiv);
-}
-
-function getUrlForIcon(icon) {
-	// console.log(icon);
-	const url = icon.split('/');
-	const newUrl = url.slice(url.length - 2);
-	// console.log({ newUrl, icon });
-	// const isday = newUrl[0] === 'day';
-	const listo = `/${newUrl.join('/')}`;
-	// console.log(listo);
-	// console.log('url[0]', url[0]);
-
-	return listo;
-}
 
 function render() {
-	console.log(DATA);
+	// console.log(DATA);
 
 	/** @type {{forecastday: Array, precip: number, humidity: number, wind: number, is_day: number, icon: string, code: number,text: string,temp: number,localtime: number,name: string} */
-	const {
-		forecastday,
-		precip,
-		humidity,
-		wind,
-		is_day,
-		icon,
-		// code,
-		text,
-		temp,
-		localtime,
-		name,
-	} = {
+	const mapData = {
 		temp: selectedUnit ? DATA.current.temp_c : DATA.current.temp_f,
 		precip: DATA.current.precip_in,
 		humidity: DATA.current.humidity,
@@ -233,78 +106,21 @@ function render() {
 		icon: DATA.current.condition.icon,
 		localtime: DATA.location.localtime,
 		name: DATA.location.name,
-		forecastday: DATA.forecast.forecastday,
+		forecastday: DATA.forecast.forecastday.map((d) => {
+			d.day.mintemp = selectedUnit ? d.day.mintemp_c : d.day.mintemp_f;
+			d.day.maxtemp = selectedUnit ? d.day.maxtemp_c : d.day.maxtemp_f;
+			return d;
+		}),
 	};
+	// console.log(mapData);
 
-	const currentDate = new Date(localtime);
+	const { is_day } = mapData;
 
 	setThemeOfday(is_day);
-
-	textLocation.textContent = `${DATA.location.name}, ${DATA.location.region}, ${DATA.location.country}.`;
-	// console.log(getUrlForIcon(icon));
-
-	infoImg.setAttribute('src', getUrlForIcon(icon));
-	infoImg.setAttribute('loading', 'lazy');
-	infoTemp.textContent = `${temp.toFixed(1)}°`;
-	dataPrec.textContent = Math.round(precip);
-	dataHumedity.textContent = humidity;
-	dataWind.textContent = wind;
-
-	cityCity.textContent = name;
-
-	cityDay.textContent = getDayFromIndex(currentDate.getDay());
-	cityCond.textContent = text;
-
-	// chartWrapper.innerHTML = '';
-
-	forecastday.forEach(({ day, date, hour }) => {
-		const nextDate = new Date(date);
-		const activeDay = currentDate.getDate() == nextDate.getDate();
-
-		if (activeDay) {
-			const configPerItem = hour.map(
-				({ time, temp_c, temp_f, condition, precip_in, wind_kph }) => {
-					const formatHour = getFormatDateTime(time);
-					let config = {
-						hours: formatHour,
-						src: getUrlForIcon(condition.icon),
-					};
-
-					switch (tab) {
-						case TABS.temp:
-							{
-								const token = selectedUnit ? temp_c : temp_f;
-								config.temp = { data: token, unit: '°' };
-							}
-							break;
-						case TABS.prec:
-							{
-								config.temp = { data: precip_in, unit: '%' };
-							}
-							break;
-						case TABS.wind:
-							{
-								config.temp = { data: wind_kph, unit: 'km/h' };
-								config.src = '/arrow-up.svg';
-							}
-							break;
-					}
-					return [config.temp, config.src, config.hours];
-				}
-			);
-
-			hour.forEach((_, i) => {
-				const elements = createHourCard(i, ...configPerItem[i]);
-
-				if (tab === TABS.wind) {
-					elements.img.style.transformOrigin = '25px 25px;';
-					elements.img.style.transform = `rotate(${_.wind_degree}deg)`;
-				}
-			});
-		}
-
-		createCardDay(day, date, nextDate, activeDay);
-	});
+	Location(DATA.location);
+	Information(mapData);
+	CardsHours(DATA, tab, selectedUnit);
+	CardsDays(DATA);
 
 	scrollToCurrentHourCard();
 }
