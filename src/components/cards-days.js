@@ -1,12 +1,15 @@
-import { getDayFromIndex, getUrlForIcon } from '../utils';
+import { $, getDayFromIndex, getUrlForIcon, UNITS } from '../utils';
+import { dataStore } from '../utils/data_store';
 
-const daysWrapper = document.getElementById('days');
+const daysWrapper = $('#days');
 
 let cards = [];
 
 function createCard(day, date, nextDate, activeDay) {
-	const { condition, maxtemp, mintemp } = day;
-
+	const { unit } = dataStore.value;
+	const { condition, mintemp_c, maxtemp_c, mintemp_f, maxtemp_f } = day;
+	const mintempToken = unit === UNITS.c ? mintemp_c : mintemp_f;
+	const maxtempToken = unit === UNITS.c ? maxtemp_c : maxtemp_f;
 	// if(cards.filter(c=>date === c)[0]) {
 	// 	const eleDay = cardDay.querySelector('.days__day');
 	// 	const eleImg = cardDay.querySelector('.days__img');
@@ -24,8 +27,8 @@ function createCard(day, date, nextDate, activeDay) {
 	// 	return;
 
 	// }
-	console.log(cards.filter((c) => date === c.dataset.dateid)[0]);
-	const cardDay = document.querySelector(`[data-dateid="${date}"]`);
+	// console.log(cards.filter((c) => date === c.dataset.dateid)[0]);
+	const cardDay = $(`[data-dateid="${date}"]`);
 	if (cardDay) {
 		const eleDay = cardDay.querySelector('.days__day');
 		const eleImg = cardDay.querySelector('.days__img');
@@ -37,8 +40,8 @@ function createCard(day, date, nextDate, activeDay) {
 		eleImg.setAttribute('alt', `representacion visual - ${condition.text}`);
 		eleImg.setAttribute('loading', 'lazy');
 
-		eleMax.textContent = `${maxtemp}°.`;
-		eleMin.textContent = `${mintemp}°.`;
+		eleMax.textContent = `${maxtempToken}°.`;
+		eleMin.textContent = `${mintempToken}°.`;
 
 		return;
 	}
@@ -62,10 +65,10 @@ function createCard(day, date, nextDate, activeDay) {
 	img.setAttribute('loading', 'lazy');
 	img.classList.add('days__img');
 
-	max.textContent = `${maxtemp}°.`;
+	max.textContent = `${maxtempToken}°.`;
 	max.classList.add('days__max');
 
-	min.textContent = `${mintemp}°.`;
+	min.textContent = `${mintempToken}°.`;
 	min.classList.add('days__min');
 
 	maxminContainer.classList.add('days__temp');
@@ -80,7 +83,8 @@ function createCard(day, date, nextDate, activeDay) {
 	cards.push(cardContainer);
 }
 
-export default function CardsDays(data) {
+export default function CardsDays() {
+	const { data } = dataStore.value;
 	data.forecast.forecastday.forEach(({ day, date }) => {
 		const currentDate = new Date(Date.now());
 		const nextDate = new Date(date);

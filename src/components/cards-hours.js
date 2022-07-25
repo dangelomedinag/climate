@@ -1,14 +1,10 @@
-import { getFormatDateTime, getUrlForIcon, TABS } from '../utils';
-const chartWrapper = document.getElementById('chart');
+import { $, getFormatDateTime, getUrlForIcon, TABS, UNITS } from '../utils';
+import { dataStore } from '../utils/data_store';
+const chartWrapper = $('#chart');
 
 function createCard(data_temp, temp, src, hours, tab) {
-	// console.log(chartWrapper.children.length);
-
 	if (chartWrapper.children.length >= 24) {
-		const cards = document.querySelector(`[data-temp="${data_temp}"]`);
-		// console.log('data-temp=', data_temp - 1);
-		// console.log(attr);
-		// console.log(cards);
+		const cards = $(`[data-temp="${data_temp}"]`);
 
 		const hourtempdiv = cards.querySelector('.hour__temp');
 		hourtempdiv.textContent = `${temp.data}${temp.unit}`;
@@ -60,7 +56,9 @@ function createCard(data_temp, temp, src, hours, tab) {
 	};
 }
 
-export default function CardsHours(data, tab, selectedUnit) {
+export default function CardsHours() {
+	const { data, unit, tab } = dataStore.value;
+	const selectedUnit = unit === UNITS.c;
 	const currentDate = new Date(Date.now());
 
 	data.forecast.forecastday.forEach(({ date, hour }) => {

@@ -1,34 +1,31 @@
-import { getDayFromIndex, getUrlForIcon } from '../utils';
+import { $, getDayFromIndex, getUrlForIcon, UNITS } from '../utils';
+import { dataStore } from '../utils/data_store';
 
-const infoImg = document.querySelector('.info__img');
-const infoTemp = document.querySelector('.info__temp');
-const dataPrec = document.querySelector('.data__prec');
-const dataHumedity = document.querySelector('.data__humedity');
-const dataWind = document.querySelector('.data__wind');
-const cityCity = document.querySelector('.city__city');
-const cityDay = document.querySelector('.city__day');
-const cityCond = document.querySelector('.city__cond');
+const infoImg = $('.info__img');
+const infoTemp = $('.info__temp');
+const dataPrec = $('.data__prec');
+const dataHumedity = $('.data__humedity');
+const dataWind = $('.data__wind');
+const cityCity = $('.city__city');
+const cityDay = $('.city__day');
+const cityCond = $('.city__cond');
 
-export default function Information({
-	icon,
-	temp,
-	precip,
-	humidity,
-	wind,
-	name,
-	text,
-}) {
+export default function Information() {
+	const { unit, data } = dataStore.value;
+	const { temp_c, temp_f, precip_in, humidity, wind_kph, condition } =
+		data.current;
+	const temp = unit === UNITS.c ? temp_c : temp_f;
 	const date = new Date(Date.now());
 
-	infoImg.setAttribute('src', getUrlForIcon(icon));
+	infoImg.setAttribute('src', getUrlForIcon(condition.icon));
 	infoImg.setAttribute('loading', 'lazy');
 	infoTemp.textContent = `${temp.toFixed(1)}°`;
-	dataPrec.textContent = Math.round(precip);
+	dataPrec.textContent = Math.round(precip_in);
 	dataHumedity.textContent = humidity;
-	dataWind.textContent = wind;
+	dataWind.textContent = wind_kph;
 
-	cityCity.textContent = name;
+	cityCity.textContent = data.location.name;
 
 	cityDay.textContent = getDayFromIndex(date.getDay());
-	cityCond.textContent = text;
+	cityCond.textContent = condition.text;
 }

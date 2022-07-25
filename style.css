@@ -98,7 +98,7 @@ header {
 	display: flex;
 	align-items: center;
 	/* margin-bottom: 1em; */
-	padding: 0.25em 2em;
+	padding: 0.25em 1em;
 	/* height: 50px; */
 	box-shadow: 0 0 35px rgba(36, 12, 115, 0.5);
 	background: var(--header-bg);
@@ -124,7 +124,7 @@ header {
 	min-width: 0;
 	max-height: 50px;
 	transform: rotate(0deg);
-	animation: logo-animated 10s infinite linear;
+	/* animation: logo-animated 10s infinite linear; */
 
 	/* max-width: 100%; */
 	/* height: auto; */
@@ -165,7 +165,7 @@ header {
 }
 
 .form-label {
-	font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+	/* font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; */
 	/* text-transform: uppercase; */
 	font-size: 1rem;
 	color: white;

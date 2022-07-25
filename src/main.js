@@ -1,32 +1,17 @@
-import { /* getData, */ API } from './api';
-import {
-	// getUrlForIcon,
-	// getFormatDateTime,
-	// getDayFromIndex,
-	getInputValue,
-	TABS,
-	UNITS,
-} from './utils';
+import { API } from './api';
+import { getInputValue } from './utils';
+import { dataStore } from './utils/data_store';
 import '../style.css';
 import Information from './components/information';
 import Location from './components/location';
 import CardsDays from './components/cards-days';
 import CardsHours from './components/cards-hours';
 
-let unit = UNITS.c;
-
-let tab = TABS.temp;
-let selectedUnit = unit === UNITS.c;
-let DATA;
-
 const btnScrollTop = document.getElementById('scrollToTop');
-btnScrollTop.addEventListener('click', () => {
-	window.scrollTo({ behavior: 'smooth', top: 0 });
-});
 
 function themeDay() {
 	const date = new Date(Date.now()).getHours();
-	// console.log({ date });
+
 	if (date < 8 || date > 17) document.body.classList.toggle('night');
 	else document.body.classList.toggle('day');
 }
@@ -51,30 +36,20 @@ if (toggle) {
 	});
 }
 
-// const infoImg = document.querySelector('.info__img');
-// const infoTemp = document.querySelector('.info__temp');
-
-// const dataPrec = document.querySelector('.data__prec');
-// const dataHumedity = document.querySelector('.data__humedity');
-// const dataWind = document.querySelector('.data__wind');
-
-// const cityCity = document.querySelector('.city__city');
-// const cityDay = document.querySelector('.city__day');
-// const cityCond = document.querySelector('.city__cond');
-
-// const daysWrapper = document.getElementById('days');
 const tabsWrapper = document.getElementById('tabs');
 const chartWrapper = document.getElementById('chart');
 
 function setUnit(new_value) {
-	unit = new_value;
-	selectedUnit = unit === UNITS.c;
+	dataStore.update((curr) => {
+		curr.unit = new_value;
+		return curr;
+	});
 }
-function setThemeOfday(is_day) {
+function setThemeOfday() {
 	document.body.classList.remove('day');
 	document.body.classList.remove('night');
 
-	if (is_day) document.body.classList.add('day');
+	if (dataStore.value.data.current.is_day) document.body.classList.add('day');
 	else document.body.classList.add('night');
 }
 function selectUnit(e) {
@@ -85,43 +60,18 @@ function selectUnit(e) {
 
 	e.currentTarget.classList.add('active');
 
-	if (unit === dataset_unit) return;
+	if (dataStore.value.unit === dataset_unit) return;
 
 	setUnit(dataset_unit);
 	render();
 }
 
 function render() {
-	// console.log(DATA);
-
-	/** @type {{forecastday: Array, precip: number, humidity: number, wind: number, is_day: number, icon: string, code: number,text: string,temp: number,localtime: number,name: string} */
-	const mapData = {
-		temp: selectedUnit ? DATA.current.temp_c : DATA.current.temp_f,
-		precip: DATA.current.precip_in,
-		humidity: DATA.current.humidity,
-		wind: DATA.current.wind_kph,
-		is_day: DATA.current.is_day,
-		text: DATA.current.condition.text,
-		code: DATA.current.condition.code,
-		icon: DATA.current.condition.icon,
-		localtime: DATA.location.localtime,
-		name: DATA.location.name,
-		forecastday: DATA.forecast.forecastday.map((d) => {
-			d.day.mintemp = selectedUnit ? d.day.mintemp_c : d.day.mintemp_f;
-			d.day.maxtemp = selectedUnit ? d.day.maxtemp_c : d.day.maxtemp_f;
-			return d;
-		}),
-	};
-	// console.log(mapData);
-
-	const { is_day } = mapData;
-
-	setThemeOfday(is_day);
-	Location(DATA.location);
-	Information(mapData);
-	CardsHours(DATA, tab, selectedUnit);
-	CardsDays(DATA);
-
+	setThemeOfday();
+	Location();
+	Information();
+	CardsHours();
+	CardsDays();
 	scrollToCurrentHourCard();
 }
 function scrollToCurrentHourCard() {
@@ -177,7 +127,10 @@ function submitHandler(e) {
 }
 function handlerResponse(response) {
 	// store response globally
-	DATA = response;
+	dataStore.update((curr) => {
+		curr.data = response;
+		return curr;
+	});
 
 	// show DOM elements to hydrate
 	mainWrapper.classList.remove('hide');
@@ -296,7 +249,15 @@ btnsTabs.forEach((tabItem) => {
 		const dataset_tab = event.currentTarget.dataset.tab;
 
 		// set active tab
-		tab = dataset_tab;
+		dataStore.update((curr) => {
+			curr.tab = dataset_tab;
+			return curr;
+		});
+
 		render();
 	});
+});
+
+btnScrollTop.addEventListener('click', () => {
+	window.scrollTo({ behavior: 'smooth', top: 0 });
 });

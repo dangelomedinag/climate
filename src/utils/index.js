@@ -69,3 +69,19 @@ export function getUrlForIcon(icon) {
 	const listo = `/${newUrl.join('/')}`;
 	return listo;
 }
+
+export function $(selector, unique = false) {
+	if (selector[0] === '#') {
+		let substring = selector.slice(1, selector.length);
+		return document.getElementById(substring);
+	}
+	if (unique) {
+		const element = document.querySelector(selector);
+		return element;
+	}
+	const element = document.querySelectorAll(selector);
+	if (element.length > 1) return element;
+	else if (element.length > 0) return element[0];
+
+	return;
+}
