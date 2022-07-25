@@ -1,7 +1,7 @@
+import '../style.css';
 import { API } from './api';
 import { getInputValue } from './utils';
 import { dataStore } from './utils/data_store';
-import '../style.css';
 import Information from './components/information';
 import Location from './components/location';
 import CardsDays from './components/cards-days';
