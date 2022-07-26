@@ -1,13 +1,13 @@
 import { API } from './api';
 import { getInputValue } from './utils';
 import { dataStore } from './utils/data_store';
-import '../style.css';
 import { render } from './components/render';
 import {
 	removeListenerToggleTemperature,
 	ToggleTemperature,
 } from './components/TemperatureToggleButtons';
 import { DisplayError } from './components/DisplayError';
+import '../style.css';
 
 const btnScrollTop = document.getElementById('scrollToTop');
 
