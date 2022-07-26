@@ -1,4 +1,4 @@
-import { API } from './api';
+/* import { API } from './api';
 import { getInputValue } from './utils';
 import { dataStore } from './utils/data_store';
 import { render } from './components/render';
@@ -7,26 +7,28 @@ import {
 	ToggleTemperature,
 } from './components/TemperatureToggleButtons';
 import { DisplayError } from './components/DisplayError';
+import { close, show } from './components/SubmitLoader'; */
 import '../style.css';
+import './components/Search';
 
-const btnScrollTop = document.getElementById('scrollToTop');
+// const btnScrollTop = document.getElementById('scrollToTop');
 
 function themeDay() {
 	const date = new Date(Date.now()).getHours();
 
-	if (date < 8 || date > 17) document.body.classList.toggle('night');
+	if (date < 8 || date > 18) document.body.classList.toggle('night');
 	else document.body.classList.toggle('day');
 }
 
 themeDay();
 
-const submitText = document.querySelector('.submit_text');
-const loaderSubmit = document.querySelector('.loader.submit');
-const loaderMain = document.querySelector('.loader-wrapper');
-const section = document.querySelector('section');
-const form = document.getElementById('form-search');
-const inputSearch = document.getElementById('form-input');
-const mainWrapper = document.getElementById('main');
+// const submitText = document.querySelector('.submit_text');
+// const loaderSubmit = document.querySelector('.loader.submit');
+// const loaderMain = document.querySelector('.loader-wrapper');
+// const section = document.querySelector('section');
+// const form = document.getElementById('form-search');
+// const inputSearch = document.getElementById('form-input');
+// const mainWrapper = document.getElementById('main');
 
 // const toggle = document.getElementById('toggle');
 // if (toggle) {
@@ -36,9 +38,9 @@ const mainWrapper = document.getElementById('main');
 // 	});
 // }
 
-const tabsWrapper = document.getElementById('tabs');
+// const tabsWrapper = document.getElementById('tabs');
 
-function submitHandler(e) {
+/* function submitHandler(e) {
 	// prevent page reload
 	e.preventDefault();
 
@@ -150,12 +152,11 @@ function onInput() {
 				submitText.style.visibility = 'visible';
 			});
 	}, 500);
-}
+} */
 
-inputSearch.addEventListener('input', onInput);
-form.addEventListener('submit', submitHandler);
+/* inputSearch.addEventListener('input', onInput); */
 
-const btnsTabs = tabsWrapper.querySelectorAll('button');
+/* const btnsTabs = tabsWrapper.querySelectorAll('button');
 btnsTabs.forEach((tabItem) => {
 	tabItem.addEventListener('click', (event) => {
 		btnsTabs.forEach((x) => {
@@ -173,8 +174,10 @@ btnsTabs.forEach((tabItem) => {
 
 		render();
 	});
-});
+}); */
 
-btnScrollTop.addEventListener('click', () => {
-	window.scrollTo({ behavior: 'smooth', top: 0 });
-});
+// btnScrollTop.addEventListener('click', () => {
+// 	window.scrollTo({ behavior: 'smooth', top: 0 });
+// });
+
+const STATES = ['initial', 'results', 'error'];

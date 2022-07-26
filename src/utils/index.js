@@ -28,6 +28,10 @@ export const UNITS = Object.freeze({
 	f: 'f',
 });
 
+/**
+ * @param {HTMLInputElement} inputElement
+ *	@return {string|undefined}
+ */
 export function getInputValue(inputElement) {
 	const value = inputElement.value.toLowerCase().trim();
 	return value;
