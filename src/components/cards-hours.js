@@ -108,4 +108,28 @@ export default function CardsHours() {
 			});
 		}
 	});
+
+	scrollToCurrentHourCard();
+}
+
+function scrollToCurrentHourCard() {
+	const currentHour = new Date(Date.now()).getHours();
+	const currentHourCard =
+		chartWrapper.querySelectorAll('.chart__card')[currentHour];
+
+	const act = chartWrapper.querySelector('.current_hour');
+	if (act) {
+		act.classList.remove('currnte_hour');
+	}
+
+	const width = chartWrapper.getBoundingClientRect().width;
+	const emUnit = 16;
+
+	currentHourCard.classList.add('current_hour');
+	currentHourCard.classList.add('shadow-smooth');
+
+	chartWrapper.scrollTo({
+		behavior: 'smooth',
+		left: currentHourCard.offsetLeft - width / 2 + emUnit * 3,
+	});
 }

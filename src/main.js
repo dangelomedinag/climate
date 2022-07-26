@@ -1,11 +1,13 @@
-import '../style.css';
 import { API } from './api';
 import { getInputValue } from './utils';
 import { dataStore } from './utils/data_store';
-import Information from './components/information';
-import Location from './components/location';
-import CardsDays from './components/cards-days';
-import CardsHours from './components/cards-hours';
+import '../style.css';
+import { render } from './components/render';
+import {
+	removeListenerToggleTemperature,
+	ToggleTemperature,
+} from './components/TemperatureToggleButtons';
+import { DisplayError } from './components/DisplayError';
 
 const btnScrollTop = document.getElementById('scrollToTop');
 
@@ -25,80 +27,17 @@ const section = document.querySelector('section');
 const form = document.getElementById('form-search');
 const inputSearch = document.getElementById('form-input');
 const mainWrapper = document.getElementById('main');
-const c_toggle = document.querySelector('.btns__c');
-const f_toggle = document.querySelector('.btns__f');
 
-const toggle = document.getElementById('toggle');
-if (toggle) {
-	toggle.addEventListener('click', () => {
-		document.body.classList.toggle('night');
-		document.body.classList.toggle('day');
-	});
-}
+// const toggle = document.getElementById('toggle');
+// if (toggle) {
+// 	toggle.addEventListener('click', () => {
+// 		document.body.classList.toggle('night');
+// 		document.body.classList.toggle('day');
+// 	});
+// }
 
 const tabsWrapper = document.getElementById('tabs');
-const chartWrapper = document.getElementById('chart');
 
-function setUnit(new_value) {
-	dataStore.update((curr) => {
-		curr.unit = new_value;
-		return curr;
-	});
-}
-function setThemeOfday() {
-	document.body.classList.remove('day');
-	document.body.classList.remove('night');
-
-	if (dataStore.value.data.current.is_day) document.body.classList.add('day');
-	else document.body.classList.add('night');
-}
-function selectUnit(e) {
-	let dataset_unit = e.currentTarget.dataset.unit;
-
-	if (dataset_unit === 'c') f_toggle.classList.remove('active');
-	else c_toggle.classList.remove('active');
-
-	e.currentTarget.classList.add('active');
-
-	if (dataStore.value.unit === dataset_unit) return;
-
-	setUnit(dataset_unit);
-	render();
-}
-
-function render() {
-	setThemeOfday();
-	Location();
-	Information();
-	CardsHours();
-	CardsDays();
-	scrollToCurrentHourCard();
-}
-function scrollToCurrentHourCard() {
-	const currentHour = new Date(Date.now()).getHours();
-	const currentHourCard =
-		chartWrapper.querySelectorAll('.chart__card')[currentHour];
-
-	const act = chartWrapper.querySelector('.current_hour');
-	if (act) {
-		act.classList.remove('currnte_hour');
-	}
-
-	const width = chartWrapper.getBoundingClientRect().width;
-
-	currentHourCard.classList.add('current_hour');
-	currentHourCard.classList.add('shadow-smooth');
-
-	// currentHourCard.scrollIntoView({
-	// 	behavior: 'auto',
-	// 	inline: 'end',
-	// 	block: 'center',
-	// });
-	chartWrapper.scrollTo({
-		behavior: 'smooth',
-		left: currentHourCard.offsetLeft - width / 2 + 16 * 3,
-	});
-}
 function submitHandler(e) {
 	// prevent page reload
 	e.preventDefault();
@@ -138,36 +77,16 @@ function handlerResponse(response) {
 	render();
 
 	// listener
-	c_toggle.addEventListener('click', selectUnit);
-	f_toggle.addEventListener('click', selectUnit);
+	ToggleTemperature();
 }
 function handlerError(error) {
 	//remove active listener to avoid memory leaks
-	c_toggle.removeEventListener('click', selectUnit);
-	f_toggle.removeEventListener('click', selectUnit);
+	removeListenerToggleTemperature();
 
 	console.warn(error.message);
 
-	// if error elements exist, avoid re-render error
-	const errorWrapper = document.getElementById('error');
-	if (errorWrapper) return;
-
-	const div = document.createElement('div');
-	div.setAttribute('id', 'error');
-	const el = document.createElement('img');
-	const elText = document.createElement('h1');
-	elText.textContent = 'Sin registros para tu busqueda.';
-	el.setAttribute('src', '/zone-not-found.png');
-	el.setAttribute('alt', 'personaje con rostro triste busqueda sin exito');
-	el.setAttribute('loading', 'lazy');
-
-	const appWrapper = document.getElementById('app');
-	div.appendChild(elText);
-	div.appendChild(el);
-
-	appWrapper.appendChild(div);
+	DisplayError();
 }
-
 const openSuggestion = () => {
 	section.classList.remove('hide');
 	if (timeoutId) clearTimeout(timeoutId);
@@ -235,8 +154,6 @@ function onInput() {
 
 inputSearch.addEventListener('input', onInput);
 form.addEventListener('submit', submitHandler);
-c_toggle.addEventListener('click', selectUnit);
-f_toggle.addEventListener('click', selectUnit);
 
 const btnsTabs = tabsWrapper.querySelectorAll('button');
 btnsTabs.forEach((tabItem) => {

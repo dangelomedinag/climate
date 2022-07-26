@@ -1,6 +1,6 @@
-import { $, UNITS } from "../utils";
-import { dataStore } from "../utils/data_store";
-
+import { $, UNITS } from '../utils';
+import { dataStore } from '../utils/data_store';
+import { render } from './render';
 
 const button_C = $('.btns__c', true);
 const button_F = $('.btns__f', true);
@@ -26,7 +26,11 @@ function selectUnit(e) {
 	render();
 }
 
-export function ada
-
-button_C.addEventListener('click', selectUnit);
-button_F.addEventListener('click', selectUnit);
+export function ToggleTemperature() {
+	button_C.addEventListener('click', selectUnit);
+	button_F.addEventListener('click', selectUnit);
+}
+export function removeListenerToggleTemperature() {
+	button_C.removeEventListener('click', selectUnit);
+	button_F.removeEventListener('click', selectUnit);
+}
