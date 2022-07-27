@@ -10,8 +10,13 @@ import { DisplayError } from './components/DisplayError';
 import { close, show } from './components/SubmitLoader'; */
 import '../style.css';
 import './components/Search';
+// import { dataStore } from './utils/data_store';
 
-// const btnScrollTop = document.getElementById('scrollToTop');
+const btnScrollTop = document.getElementById('scrollToTop');
+
+btnScrollTop.addEventListener('click', () => {
+	window.scrollTo({ behavior: 'smooth', top: 0 });
+});
 
 function themeDay() {
 	const date = new Date(Date.now()).getHours();
@@ -180,4 +185,4 @@ btnsTabs.forEach((tabItem) => {
 // 	window.scrollTo({ behavior: 'smooth', top: 0 });
 // });
 
-const STATES = ['initial', 'results', 'error'];
+// const STATES = ['initial', 'results', 'error'];
