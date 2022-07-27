@@ -4,7 +4,6 @@ import { $ } from '../utils';
 const appWrapper = $('#app');
 
 /**@type {HTMLElement} */
-const mainWrapper = $('#main');
 
 const divError = document.createElement('div');
 const image = document.createElement('img');
@@ -17,7 +16,8 @@ image.setAttribute('alt', 'personaje con rostro triste busqueda sin exito');
 image.setAttribute('loading', 'lazy');
 
 function displayError() {
-	mainWrapper.classList.add('hide');
+	const mainWrapper = $('#main');
+	mainWrapper && mainWrapper.remove();
 
 	// if error elements exist, avoid re-render error
 	const errorWrapper = $('#error');

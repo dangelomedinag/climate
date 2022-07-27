@@ -73,7 +73,9 @@ export function getUrlForIcon(icon) {
 	const listo = `/${newUrl.join('/')}`;
 	return listo;
 }
-
+/**
+ * @param {string}
+ * @param {boolean} [unique] - use querySelector instead querySelectorAll */
 export function $(selector, unique = false) {
 	if (selector[0] === '#') {
 		let substring = selector.slice(1, selector.length);

@@ -1,9 +1,13 @@
 import { $, getDayFromIndex, getUrlForIcon, UNITS } from '../utils';
 import { dataStore } from '../utils/data_store';
 
-const daysWrapper = $('#days');
+// const daysWrapper = $('#days');
 
-let cards = [];
+/**@type {HTMLElement} */
+const days = document.createElement('div');
+days.setAttribute('id', 'days');
+
+// let cards = [];
 
 function createCard(day, date, nextDate, activeDay) {
 	const { unit } = dataStore.value;
@@ -79,11 +83,12 @@ function createCard(day, date, nextDate, activeDay) {
 	cardContainer.appendChild(img);
 	cardContainer.appendChild(maxminContainer);
 
-	daysWrapper.appendChild(cardContainer);
-	cards.push(cardContainer);
+	days.appendChild(cardContainer);
+	// cards.push(cardContainer);
 }
 
 export default function CardsDays() {
+	days.innerHTML = '';
 	const { data } = dataStore.value;
 	data.forecast.forecastday.forEach(({ day, date }) => {
 		const currentDate = new Date(Date.now());
@@ -92,4 +97,6 @@ export default function CardsDays() {
 
 		createCard(day, date, nextDate, activeDay);
 	});
+
+	return days;
 }

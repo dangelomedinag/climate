@@ -1,10 +1,14 @@
-import { $, getFormatDateTime, getUrlForIcon, TABS, UNITS } from '../utils';
+import { getFormatDateTime, getUrlForIcon, TABS, UNITS } from '../utils';
 import { dataStore } from '../utils/data_store';
-const chartWrapper = $('#chart');
 
-function createCard(data_temp, temp, src, hours, tab) {
-	if (chartWrapper.children.length >= 24) {
-		const cards = $(`[data-temp="${data_temp}"]`);
+/**@type {HTMLElement} */
+const chart = document.createElement('div');
+chart.setAttribute('id', 'chart');
+
+function createCard(data_temp, temp, src, hours) {
+	if (chart.children.length >= 24) {
+		const { tab } = dataStore.value;
+		const cards = chart.querySelector(`[data-temp="${data_temp}"]`);
 
 		const hourtempdiv = cards.querySelector('.hour__temp');
 		hourtempdiv.textContent = `${temp.data}${temp.unit}`;
@@ -46,7 +50,7 @@ function createCard(data_temp, temp, src, hours, tab) {
 	cardElement.appendChild(imgElement);
 	cardElement.appendChild(hourElement);
 
-	chartWrapper.appendChild(cardElement);
+	chart.appendChild(cardElement);
 
 	return {
 		card: cardElement,
@@ -109,26 +113,25 @@ export default function CardsHours() {
 		}
 	});
 
-	scrollToCurrentHourCard();
+	return chart;
 }
 
-function scrollToCurrentHourCard() {
+export function scrollToCurrentHourCard() {
 	const currentHour = new Date(Date.now()).getHours();
-	const currentHourCard =
-		chartWrapper.querySelectorAll('.chart__card')[currentHour];
+	const currentHourCard = chart.querySelectorAll('.chart__card')[currentHour];
 
-	const act = chartWrapper.querySelector('.current_hour');
+	const act = chart.querySelector('.current_hour');
 	if (act) {
 		act.classList.remove('currnte_hour');
 	}
 
-	const width = chartWrapper.getBoundingClientRect().width;
+	const width = chart.getBoundingClientRect().width;
 	const emUnit = 16;
 
 	currentHourCard.classList.add('current_hour');
 	currentHourCard.classList.add('shadow-smooth');
 
-	chartWrapper.scrollTo({
+	chart.scrollTo({
 		behavior: 'smooth',
 		left: currentHourCard.offsetLeft - width / 2 + emUnit * 3,
 	});
