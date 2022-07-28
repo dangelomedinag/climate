@@ -1,4 +1,5 @@
 import { $ } from '../utils';
+
 /**@type {HTMLElement} */
 const app = $('#app');
 

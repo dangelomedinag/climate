@@ -14,9 +14,11 @@ loader.classList.add('submit');
 
 export function loading() {
 	submitButton.appendChild(loader);
+	submitButton.disabled = true;
 	submitText.style.visibility = 'hidden';
 }
 export function loadingEnd() {
 	loader.remove();
+	submitButton.disabled = false;
 	submitText.style.visibility = 'visible';
 }

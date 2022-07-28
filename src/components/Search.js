@@ -13,6 +13,9 @@ const form = $('#form-search');
 /**@type {HTMLInputElement} */
 const inputSearch = $('#form-input');
 
+/**@type {HTMLInputElement} */
+const buttonSubmit = $('#form-submit');
+
 /**@type {HTMLElement} */
 const autocomplete = document.createElement('section');
 
@@ -23,7 +26,6 @@ function autocompleteList(results) {
 	const listResolve = new Promise((res) => {
 		if (debounce) {
 			removeAutocomplete();
-			// rej('cancel autocomplete');
 		}
 
 		debounce = setTimeout(() => {
@@ -45,7 +47,7 @@ function autocompleteList(results) {
 			});
 			list.forEach((button) => autocomplete.appendChild(button));
 			res();
-		}, 500);
+		}, 800);
 	});
 	return listResolve;
 }
@@ -283,10 +285,31 @@ function submitHandler(e) {
  * 	@return {void}
  * */
 function onInput() {
-	if (!inputSearch.validity.valid) return;
+	buttonSubmit.querySelector('.submit_text').textContent = 'buscar';
+	buttonSubmit.classList.remove('short');
 
 	const value = getInputValue(inputSearch);
-	if (!value) return;
+	if (!value) {
+		console.log('vacio');
+		inputSearch.value = '';
+		buttonSubmit.classList.remove('short');
+		return;
+	}
+
+	if (!inputSearch.validity.valid) {
+		inputSearch.onblur = () => {
+			if (inputSearch.validity.tooShort) {
+				buttonSubmit.classList.add('short');
+				buttonSubmit.querySelector('.submit_text').textContent =
+					'mínimo 3 caracteres';
+			}
+		};
+
+		loadingEnd();
+		removeAutocomplete();
+
+		return;
+	}
 
 	loading();
 	API.search({ q: value })
@@ -296,6 +319,18 @@ function onInput() {
 				if (debounce) clearTimeout(debounce);
 				throw Error('empty results - ' + value);
 			}
+			/* ver */
+			console.log(response.search);
+			console.log(value);
+			console.log(
+				[...response.search].some((l) => {
+					l.name.toLowerCase().includes(value) ||
+						l.country.toLowerCase().includes(value) ||
+						l.region.toLowerCase().includes(value) ||
+						l.url.toLowerCase().includes(value);
+				})
+			);
+			/* ver */
 			autocompleteList(response.search)
 				.then(() => {
 					loadingEnd();
@@ -305,8 +340,8 @@ function onInput() {
 					console.log('abort', abort);
 				});
 		})
-		.catch((error) => {
-			console.error(error);
+		.catch(() => {
+			// console.error(error);
 			loadingEnd();
 		})
 		.finally(() => {

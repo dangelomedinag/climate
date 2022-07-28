@@ -204,6 +204,13 @@ header {
 	color: var(--bg-color-transparent);
 	cursor: not-allowed;
 }
+#form-input:invalid ~ button.short {
+	font-weight: normal;
+	background: rgba(255, 0, 0, 0.1);
+	color: rgba(255, 255, 255, 0.3);
+	border: 1px solid rgba(172, 1, 1, 0.1);
+	cursor: not-allowed;
+}
 
 #form-submit {
 	position: relative;
@@ -233,6 +240,10 @@ header {
 }
 #form-submit:active {
 	transform: translateY(3%);
+}
+#form-submit:disabled {
+	/* background: transparent; */
+	opacity: 0.4;
 }
 
 section {
@@ -287,6 +298,11 @@ section button:hover {
 	display: flex;
 	border: 1px solid rgba(255, 255, 255, 0.2);
 	background-color: rgba(255, 255, 255, 0.1);
+	box-shadow: 0 0 20px 0px rgb(68 68 68 / 10%);
+}
+#search,
+#days {
+	box-shadow: none;
 }
 
 #info {
