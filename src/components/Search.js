@@ -5,6 +5,7 @@ import { loadingEnd, loading } from './SubmitLoader';
 import { render } from './render';
 import { dataStore } from '../utils/data_store';
 import { scrollToCurrentHourCard } from './cards-hours';
+import { Loader } from './LoaderMain';
 
 /**@type {HTMLFormElement} */
 const form = $('#form-search');
@@ -21,33 +22,36 @@ let debounce;
 function autocompleteList(results) {
 	const listResolve = new Promise((res) => {
 		if (debounce) {
-			console.log('clearTimeout');
-			clearTimeout(debounce);
 			removeAutocomplete();
+			// rej('cancel autocomplete');
 		}
 
-		autocomplete.innerHTML = '';
-		const list = results.map((item) => {
-			const optionElement = document.createElement('button');
-			optionElement.setAttribute('type', 'button');
-			optionElement.setAttribute('data-value', item.name + ' ' + item.country);
-			optionElement.classList.add('option');
-			optionElement.textContent = `${item.name}, ${item.country}`;
-			optionElement.addEventListener('click', () => {
-				inputSearch.value = `${item.name}, ${item.country}`;
-				removeAutocomplete();
-			});
-			return optionElement;
-		});
 		debounce = setTimeout(() => {
+			autocomplete.innerHTML = '';
+			const list = results.map((item) => {
+				const optionElement = document.createElement('button');
+				optionElement.setAttribute('type', 'button');
+				optionElement.setAttribute(
+					'data-value',
+					item.name + ' ' + item.country
+				);
+				optionElement.classList.add('option');
+				optionElement.textContent = `${item.name}, ${item.country}`;
+				optionElement.addEventListener('click', () => {
+					inputSearch.value = `${item.name}, ${item.country}`;
+					removeAutocomplete();
+				});
+				return optionElement;
+			});
 			list.forEach((button) => autocomplete.appendChild(button));
 			res();
 		}, 500);
 	});
 	return listResolve;
 }
+
 function pushOrShowAutocomplete() {
-	console.log('pushOrShowAutocomplete');
+	// console.log('pushOrShowAutocomplete');
 	window.addEventListener('click', clickOutside);
 	if (autocomplete.classList.contains('hide')) {
 		autocomplete.classList.remove('hide');
@@ -57,19 +61,19 @@ function pushOrShowAutocomplete() {
 }
 function removeAutocomplete() {
 	if (debounce) clearTimeout(debounce);
-	console.log('removeAutocomplete');
+	// console.log('removeAutocomplete');
 	autocomplete.remove();
 	window.removeEventListener('click', clickOutside);
 }
 function hideAutocomplete() {
-	console.log('hideAutocomplete');
+	// console.log('hideAutocomplete');
 	autocomplete.classList.add('hide');
 	window.removeEventListener('click', clickOutside);
 }
 
 /**@param {MouseEvent} e */
 function clickOutside(e) {
-	console.log('clickOutside');
+	// console.log('clickOutside');
 	if (!form.contains(e.target)) {
 		hideAutocomplete();
 		window.removeEventListener('click', clickOutside);
@@ -128,11 +132,11 @@ function handlerResponse(response) {
 
 	// listener
 	const tabsButtons = $('[data-tab]');
-	console.log(tabsButtons);
+	// console.log(tabsButtons);
 
 	tabsButtons.forEach((button) => {
 		button.addEventListener('click', (event) => {
-			console.log('click on tab');
+			// console.log('click on tab');
 			tabsButtons.forEach((element) => {
 				element.classList.remove('active');
 			});
@@ -253,19 +257,23 @@ function handlerError(error) {
  * 	@return {void}
  * */
 function submitHandler(e) {
+	console.log('submit');
 	e.preventDefault();
-	ErrorSearch.remove();
 	removeAutocomplete();
+	ErrorSearch.remove();
+	// hideAutocomplete();
 
 	const value = getInputValue(inputSearch);
 	if (!value) return;
 
 	loading();
+	Loader.loading();
 	API.forecast({ q: value, days: 3 })
 		.then(handlerResponse)
 		.catch(handlerError)
 		.finally(() => {
 			loadingEnd();
+			Loader.end();
 			console.log('finally onSubmit');
 		});
 }
@@ -283,7 +291,7 @@ function onInput() {
 	loading();
 	API.search({ q: value })
 		.then((response) => {
-			console.log(response);
+			// console.log(response);
 			if (response.search < 1) {
 				if (debounce) clearTimeout(debounce);
 				throw Error('empty results - ' + value);
@@ -293,8 +301,8 @@ function onInput() {
 					loadingEnd();
 					pushOrShowAutocomplete();
 				})
-				.catch(() => {
-					console.log('abort');
+				.catch((abort) => {
+					console.log('abort', abort);
 				});
 		})
 		.catch((error) => {
@@ -306,8 +314,8 @@ function onInput() {
 		});
 }
 
-form.addEventListener('submit', submitHandler);
 inputSearch.addEventListener('input', onInput);
+form.addEventListener('submit', submitHandler);
 
 // const btnsTabs = document.querySelectorAll('#tabs button');
 // btnsTabs.forEach((tabItem) => {
