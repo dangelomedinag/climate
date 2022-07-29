@@ -35,13 +35,14 @@ function autocompleteList(results) {
 				optionElement.setAttribute('type', 'button');
 				optionElement.setAttribute(
 					'data-value',
-					item.name + ' ' + item.country
+					item.name + ' ' + item.country + ' ' + item.region
 				);
 				optionElement.classList.add('option');
 				optionElement.textContent = `${item.name}, ${item.country}`;
 				optionElement.addEventListener('click', () => {
 					inputSearch.value = `${item.name}, ${item.country}`;
 					removeAutocomplete();
+					inputSearch.focus();
 				});
 				return optionElement;
 			});
@@ -55,6 +56,7 @@ function autocompleteList(results) {
 function pushOrShowAutocomplete() {
 	// console.log('pushOrShowAutocomplete');
 	window.addEventListener('click', clickOutside);
+	form.classList.remove('border-radius-bottom');
 	if (autocomplete.classList.contains('hide')) {
 		autocomplete.classList.remove('hide');
 		return;
@@ -64,11 +66,13 @@ function pushOrShowAutocomplete() {
 function removeAutocomplete() {
 	if (debounce) clearTimeout(debounce);
 	// console.log('removeAutocomplete');
+	form.classList.add('border-radius-bottom');
 	autocomplete.remove();
 	window.removeEventListener('click', clickOutside);
 }
 function hideAutocomplete() {
 	// console.log('hideAutocomplete');
+	form.classList.add('border-radius-bottom');
 	autocomplete.classList.add('hide');
 	window.removeEventListener('click', clickOutside);
 }
@@ -79,11 +83,16 @@ function clickOutside(e) {
 	if (!form.contains(e.target)) {
 		hideAutocomplete();
 		window.removeEventListener('click', clickOutside);
+
 		inputSearch.addEventListener('focus', () => {
 			setTimeout(() => {
 				inputSearch.addEventListener(
 					'click',
 					() => {
+						if (!inputSearch.validity.valid) {
+							removeAutocomplete();
+							return;
+						}
 						pushOrShowAutocomplete();
 					},
 					{ once: true }
@@ -314,24 +323,28 @@ function onInput() {
 	loading();
 	API.search({ q: value })
 		.then((response) => {
-			// console.log(response);
+			console.log(response.search);
 			if (response.search < 1) {
 				if (debounce) clearTimeout(debounce);
 				throw Error('empty results - ' + value);
 			}
-			/* ver */
-			console.log(response.search);
-			console.log(value);
-			console.log(
-				[...response.search].some((l) => {
-					l.name.toLowerCase().includes(value) ||
-						l.country.toLowerCase().includes(value) ||
-						l.region.toLowerCase().includes(value) ||
-						l.url.toLowerCase().includes(value);
-				})
-			);
-			/* ver */
-			autocompleteList(response.search)
+
+			function matchWithSearch(entrie) {
+				return (
+					entrie.name.toLowerCase().includes(value) ||
+					entrie.country.toLowerCase().includes(value) ||
+					entrie.region.toLowerCase().includes(value) ||
+					entrie.url.toLowerCase().includes(value)
+				);
+			}
+			const matchValue = response.search.filter(matchWithSearch);
+
+			if (matchValue.length < 1) {
+				if (debounce) clearTimeout(debounce);
+				throw Error('empty results - ' + value);
+			}
+
+			autocompleteList(matchValue)
 				.then(() => {
 					loadingEnd();
 					pushOrShowAutocomplete();
@@ -349,6 +362,17 @@ function onInput() {
 		});
 }
 
+function onFocus() {
+	window.addEventListener('keydown', (e) => {
+		if (e.code === 'Escape' || e.key === 'Escape') {
+			// event.target.blur();
+			removeAutocomplete();
+			inputSearch.removeEventListener('focus', onFocus);
+		}
+	});
+}
+
+// inputSearch.addEventListener('focus', onFocus);
 inputSearch.addEventListener('input', onInput);
 form.addEventListener('submit', submitHandler);
 

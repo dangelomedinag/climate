@@ -1,7 +1,7 @@
 import { $ } from '../utils';
 import { setThemeOfday } from '.';
 import CardsDays from './cards-days';
-import CardsHours from './cards-hours';
+import CardsHours, { scrollToCurrentHourCard } from './cards-hours';
 import Information from './information';
 import Location from './location';
 import { Tabs } from './Tabs';
@@ -49,5 +49,5 @@ export function render(...dependencies) {
 	mainWrapper.appendChild(CardsDays());
 
 	app.appendChild(mainWrapper);
-	// scrollToCurrentHourCard();
+	scrollToCurrentHourCard();
 }

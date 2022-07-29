@@ -13,7 +13,7 @@
 	--bg: #fff;
 	--bg-color-transparent: rgba(255, 255, 255, 0.1);
 	--text-color: white;
-	--links-color: #606060;
+	--links-color: deepskyblue;
 }
 
 *,
@@ -58,7 +58,7 @@ body {
 	--text-color: #fff;
 
 	--bg: rgb(45, 39, 67);
-	--links-color: deepskyblue;
+	/* --links-color: deepskyblue; */
 }
 
 .loader-wrapper {
@@ -148,14 +148,20 @@ header {
 
 #form-search {
 	background-color: var(--header-bg);
-	padding: 1em;
-	border-radius: 15px;
+	padding: 0.5em;
+	/* border-radius: 15px; */
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
 	width: 100%;
 	position: relative;
 	max-width: 500px;
 	margin: 0 auto;
 	/* padding: 0.5em; */
 	color: #4b4b4b;
+}
+.border-radius-bottom {
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
 }
 
 .form-group {
@@ -258,8 +264,9 @@ section {
 	width: 100%;
 	/* padding: 1em 0; */
 
-	margin-top: 0.5em;
-	border-radius: 10px;
+	/* margin-top: 0.5em; */
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
 	max-height: calc(100vh - 20em);
 	border: 2px solid var(--header-bg);
 }
