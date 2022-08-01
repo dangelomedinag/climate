@@ -6,9 +6,13 @@ import { render } from './render';
 import { dataStore } from '../utils/data_store';
 import { scrollToCurrentHourCard } from './cards-hours';
 import { Loader } from './LoaderMain';
+import { updateLabel } from './validateSearch';
 
 /**@type {HTMLFormElement} */
 const form = $('#form-search');
+
+/**@type {HTMLFormElement} */
+const formGroup = $('.form-group');
 
 /**@type {HTMLInputElement} */
 const inputSearch = $('#form-input');
@@ -20,6 +24,7 @@ const buttonSubmit = $('#form-submit');
 const autocomplete = document.createElement('section');
 
 let debounce;
+let sameValue;
 
 /**@param {Array} results */
 function autocompleteList(results) {
@@ -56,7 +61,7 @@ function autocompleteList(results) {
 function pushOrShowAutocomplete() {
 	// console.log('pushOrShowAutocomplete');
 	window.addEventListener('click', clickOutside);
-	form.classList.remove('border-radius-bottom');
+	formGroup.classList.add('border-radius-bottom');
 	if (autocomplete.classList.contains('hide')) {
 		autocomplete.classList.remove('hide');
 		return;
@@ -66,13 +71,13 @@ function pushOrShowAutocomplete() {
 function removeAutocomplete() {
 	if (debounce) clearTimeout(debounce);
 	// console.log('removeAutocomplete');
-	form.classList.add('border-radius-bottom');
+	formGroup.classList.remove('border-radius-bottom');
 	autocomplete.remove();
 	window.removeEventListener('click', clickOutside);
 }
 function hideAutocomplete() {
 	// console.log('hideAutocomplete');
-	form.classList.add('border-radius-bottom');
+	formGroup.classList.remove('border-radius-bottom');
 	autocomplete.classList.add('hide');
 	window.removeEventListener('click', clickOutside);
 }
@@ -133,6 +138,8 @@ function clickOutside(e) {
 } */
 
 function handlerResponse(response) {
+	// console.log(response);
+
 	// store response globally
 	dataStore.update((curr) => {
 		curr.data = response;
@@ -268,7 +275,7 @@ function handlerError(error) {
  * 	@return {void}
  * */
 function submitHandler(e) {
-	console.log('submit');
+	// console.log('submit', sameValue);
 	e.preventDefault();
 	removeAutocomplete();
 	ErrorSearch.remove();
@@ -276,6 +283,9 @@ function submitHandler(e) {
 
 	const value = getInputValue(inputSearch);
 	if (!value) return;
+	// if (sameValue === value) {
+	// 	console.log({ value }, { sameValue });
+	// }
 
 	loading();
 	Loader.loading();
@@ -283,9 +293,11 @@ function submitHandler(e) {
 		.then(handlerResponse)
 		.catch(handlerError)
 		.finally(() => {
+			sameValue = value;
 			loadingEnd();
 			Loader.end();
-			console.log('finally onSubmit');
+			buttonSubmit.disabled = 'true';
+			// console.log('finally onSubmit');
 		});
 }
 
@@ -294,23 +306,25 @@ function submitHandler(e) {
  * 	@return {void}
  * */
 function onInput() {
-	buttonSubmit.querySelector('.submit_text').textContent = 'buscar';
-	buttonSubmit.classList.remove('short');
+	updateLabel('cuidad o país', 'search');
+	// buttonSubmit.querySelector('.submit_text').textContent = 'buscar';
+	// buttonSubmit.classList.remove('short');
 
 	const value = getInputValue(inputSearch);
 	if (!value) {
-		console.log('vacio');
+		// console.log('vacio');
 		inputSearch.value = '';
-		buttonSubmit.classList.remove('short');
+		// buttonSubmit.classList.remove('short');
 		return;
 	}
 
 	if (!inputSearch.validity.valid) {
 		inputSearch.onblur = () => {
 			if (inputSearch.validity.tooShort) {
-				buttonSubmit.classList.add('short');
-				buttonSubmit.querySelector('.submit_text').textContent =
-					'mínimo 3 caracteres';
+				updateLabel('mínimo 3 caracteres', 'warn');
+				// buttonSubmit.classList.add('short');
+				/* buttonSubmit.querySelector('.submit_text').textContent =
+					'mínimo 3 caracteres'; */
 			}
 		};
 
@@ -323,7 +337,7 @@ function onInput() {
 	loading();
 	API.search({ q: value })
 		.then((response) => {
-			console.log(response.search);
+			// console.log(response.search);
 			if (response.search < 1) {
 				if (debounce) clearTimeout(debounce);
 				throw Error('empty results - ' + value);
@@ -349,8 +363,8 @@ function onInput() {
 					loadingEnd();
 					pushOrShowAutocomplete();
 				})
-				.catch((abort) => {
-					console.log('abort', abort);
+				.catch(() => {
+					// console.log('abort', abort);
 				});
 		})
 		.catch(() => {
@@ -358,21 +372,10 @@ function onInput() {
 			loadingEnd();
 		})
 		.finally(() => {
-			console.log('finally onInput');
+			// console.log('finally onInput');
 		});
 }
 
-function onFocus() {
-	window.addEventListener('keydown', (e) => {
-		if (e.code === 'Escape' || e.key === 'Escape') {
-			// event.target.blur();
-			removeAutocomplete();
-			inputSearch.removeEventListener('focus', onFocus);
-		}
-	});
-}
-
-// inputSearch.addEventListener('focus', onFocus);
 inputSearch.addEventListener('input', onInput);
 form.addEventListener('submit', submitHandler);
 

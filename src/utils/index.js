@@ -74,16 +74,19 @@ export function getUrlForIcon(icon) {
 	return listo;
 }
 /**
- * @param {string}
- * @param {boolean} [unique] - use querySelector instead querySelectorAll */
+ * @param {string} selector
+ * @param {boolean} [unique] - use querySelector instead querySelectorAll
+ * @return {HTMLElement|HTMLCollection|undefined}
+ * */
 export function $(selector, unique = false) {
 	if (selector[0] === '#') {
 		let substring = selector.slice(1, selector.length);
-		return document.getElementById(substring);
+		const element = document.getElementById(substring);
+		if (element) return element;
 	}
 	if (unique) {
 		const element = document.querySelector(selector);
-		return element;
+		if (element) return element;
 	}
 	const element = document.querySelectorAll(selector);
 	if (element.length > 1) return element;

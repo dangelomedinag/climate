@@ -44,7 +44,7 @@ function createCard(day, date, nextDate, activeDay) {
 		eleImg.setAttribute('alt', `representacion visual - ${condition.text}`);
 		eleImg.setAttribute('loading', 'lazy');
 
-		eleMax.textContent = `${maxtempToken}°.`;
+		eleMax.textContent = `${maxtempToken}°-`;
 		eleMin.textContent = `${mintempToken}°.`;
 
 		return;
@@ -69,7 +69,7 @@ function createCard(day, date, nextDate, activeDay) {
 	img.setAttribute('loading', 'lazy');
 	img.classList.add('days__img');
 
-	max.textContent = `${maxtempToken}°.`;
+	max.textContent = `${maxtempToken}° / `;
 	max.classList.add('days__max');
 
 	min.textContent = `${mintempToken}°.`;

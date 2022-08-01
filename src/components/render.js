@@ -4,6 +4,7 @@ import CardsDays from './cards-days';
 import CardsHours, { scrollToCurrentHourCard } from './cards-hours';
 import Information from './information';
 import Location from './location';
+import ScrollTop from './buttonToTop';
 import { Tabs } from './Tabs';
 
 /**@type {HTMLElement} */
@@ -47,6 +48,7 @@ export function render(...dependencies) {
 	mainWrapper.appendChild(Tabs());
 	mainWrapper.appendChild(CardsHours());
 	mainWrapper.appendChild(CardsDays());
+	mainWrapper.appendChild(ScrollTop());
 
 	app.appendChild(mainWrapper);
 	scrollToCurrentHourCard();
